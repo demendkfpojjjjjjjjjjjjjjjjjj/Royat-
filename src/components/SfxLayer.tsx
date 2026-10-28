@@ -10,7 +10,7 @@ const cues: Cue[] = [
   ...scenes.map((s) => ({
     frame: toFrame(s.s) - 3,
     name: (s.type === 'section' ? 'impact' : 'whoosh') as SfxName,
-    volume: s.type === 'section' ? 0.85 : 0.75,
+    volume: s.type === 'section' ? 0.45 : 0.75,
   })),
   ...emphases.map((e) => ({frame: toFrame(e.bigAt) - 4, name: 'whoosh' as SfxName, volume: 0.6})),
   ...extraSfx.map((x) => ({frame: toFrame(x.at), name: x.name, volume: x.volume ?? 1})),
