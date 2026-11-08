@@ -8,25 +8,26 @@ export type SrcId = '01' | '02' | '03' | '04';
 export type Anchor = {src: SrcId; t: number};
 export const at = (src: SrcId, t: number): Anchor => ({src, t});
 
-// Kept ranges in playback order. Removed: the filler "وووو" (01 6.44-7.02) and the
-// silent pauses. `cam` = digital camera move across the shot: [startScale, endScale].
+// Playback order. `cam` = digital camera move across the shot: [startScale, endScale].
 export type Segment = {src: SrcId; from: number; to: number; cam: [number, number]};
 export const segments: Segment[] = [
+  // Nothing is removed: the segments are contiguous and cover each clip from start to end.
+  // They only split the clips so each part can have its own camera move.
   {src: '01', from: 0.0, to: 3.0, cam: [1.0, 1.06]},     // slow push-in on the hook
-  {src: '01', from: 3.0, to: 6.44, cam: [1.1, 1.08]},    // punch + drift
+  {src: '01', from: 3.0, to: 7.02, cam: [1.1, 1.08]},    // punch + drift
   {src: '01', from: 7.02, to: 11.3, cam: [1.08, 1.02]},  // (under the full-screen question)
-  {src: '01', from: 11.3, to: 15.53, cam: [1.0, 1.15]},  // MANDATORY 12-16s: steady push-in
-  {src: '02', from: 0.0, to: 3.64, cam: [1.16, 1.06]},   // pull-out as the idea resolves
-  {src: '02', from: 3.66, to: 6.86, cam: [1.04, 1.04]},
+  {src: '01', from: 11.3, to: 15.533, cam: [1.0, 1.15]}, // (under the full-screen "الحقيقة")
+  {src: '02', from: 0.0, to: 3.64, cam: [1.16, 1.06]},
+  {src: '02', from: 3.64, to: 6.86, cam: [1.04, 1.04]},
   {src: '02', from: 6.86, to: 9.68, cam: [1.04, 1.04]},
-  {src: '02', from: 9.7, to: 15.37, cam: [1.12, 1.0]},   // zoom-out to the "big picture"
-  {src: '03', from: 0.0, to: 1.06, cam: [1.0, 1.0]},
+  {src: '02', from: 9.68, to: 15.371, cam: [1.12, 1.0]}, // zoom-out to the "big picture"
+  {src: '03', from: 0.0, to: 1.4, cam: [1.0, 1.0]},
   {src: '03', from: 1.4, to: 4.24, cam: [1.0, 1.08]},
   {src: '03', from: 4.24, to: 10.52, cam: [1.1, 1.03]},
-  {src: '03', from: 10.52, to: 15.93, cam: [1.02, 1.02]},
-  {src: '04', from: 0.0, to: 3.72, cam: [1.05, 1.0]},
-  {src: '04', from: 4.12, to: 9.4, cam: [1.0, 1.1]},     // push-in to "تحديدًا لك"
-  {src: '04', from: 9.76, to: 14.0, cam: [1.06, 1.0]},
+  {src: '03', from: 10.52, to: 15.933, cam: [1.02, 1.02]},
+  {src: '04', from: 0.0, to: 4.12, cam: [1.05, 1.0]},
+  {src: '04', from: 4.12, to: 9.58, cam: [1.0, 1.1]},    // push-in to "تحديدًا لك"
+  {src: '04', from: 9.58, to: 14.141, cam: [1.06, 1.0]},
 ];
 
 // Captions: short chunks revealed word by word. `hi` = calm-yellow words.
@@ -74,9 +75,9 @@ export type Kinetic = {
 };
 export const kinetics: Kinetic[] = [
   {s: at('01', 1.22), e: at('01', 2.98), top: 'اعتمادها الكلي على', big: 'التقنية', bigAt: at('01', 2.34), font: 'elegant'},
-  {s: at('02', 1.0), e: at('02', 3.64), top: 'ما تعطي', big: 'الأمن السيبراني', bigAt: at('02', 1.52), bottom: 'الاهتمام الكافي', bottomAt: at('02', 2.4), font: 'display'},
+  {s: at('02', 1.3), e: at('02', 3.64), top: 'ما تعطي', big: 'الأمن السيبراني', bigAt: at('02', 1.52), bottom: 'الاهتمام الكافي', bottomAt: at('02', 2.4), font: 'display'},
   {s: at('04', 7.5), e: at('04', 9.4), top: 'هذه السلسلة بتكون', big: 'تحديدًا لك', bigAt: at('04', 8.52), font: 'elegant'},
-  {s: at('04', 12.9), e: at('04', 14.0), big: 'ودمتم بخير', bigAt: at('04', 12.94), font: 'elegant'},
+  {s: at('04', 12.9), e: at('04', 14.141), big: 'ودمتم بخير', bigAt: at('04', 12.94), font: 'elegant'},
 ];
 
 // Explainer scenes. 'full' scenes replace the frame; 'overlay' scenes keep the
@@ -95,7 +96,7 @@ export const scenes: Scene[] = [
     beats: {bars: at('01', 7.6), slow: at('01', 8.52), q: at('01', 10.12)}},
   // MANDATORY window (output 00:12 -> 00:16 lies inside this scene). Full screen: the
   // speaker is fully covered from "الحقيقة" through "وتوسّع خدماتها" (requested).
-  {type: 'reality', s: at('01', 11.9), e: at('02', 1.0), full: true,
+  {type: 'reality', s: at('01', 11.9), e: at('02', 1.3), full: true,
     beats: {title: at('01', 12.04), sub: at('01', 12.58), left: at('01', 14.1), right: at('01', 14.9), dim: at('02', 0.82)}},
   {type: 'risk', s: at('02', 3.66), e: at('02', 9.68), full: true, hideCaptions: true,
     beats: {risk: at('02', 4.38), ready: at('02', 5.82), disaster: at('02', 8.22), after: at('02', 8.92)}},

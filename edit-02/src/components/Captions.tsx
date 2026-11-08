@@ -31,8 +31,7 @@ const Chunk: React.FC<{c: Caption & {sf: number; ef: number}; frame: number}> = 
           <span key={i} style={{
             display: 'inline-block', margin: '0 9px', fontFamily: theme.fontText, fontWeight: hi ? 700 : 500,
             fontSize: latin ? 52 : 58, lineHeight: 1.35, color: hi ? theme.yellow : theme.white,
-            WebkitTextStroke: '5px rgba(5,8,15,0.45)', paintOrder: 'stroke fill',
-            textShadow: hi ? `0 0 24px ${theme.yellowGlow}, 0 3px 12px rgba(0,0,0,0.8)` : '0 3px 12px rgba(0,0,0,0.8)',
+            textShadow: hi ? `0 0 22px ${theme.yellowGlow}, 0 2px 14px rgba(0,0,0,0.75)` : '0 2px 14px rgba(0,0,0,0.75), 0 0 2px rgba(0,0,0,0.35)',
             opacity: p, transform: `translateY(${lerp(p, 14, 0)}px) scale(${lerp(p, 0.96, 1)})`, filter: `blur(${lerp(p, 7, 0)}px)`,
           }}>{w}</span>
         );

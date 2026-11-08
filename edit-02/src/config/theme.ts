@@ -17,9 +17,9 @@ export const theme = {
   g3: '#6B778C',
   g4: '#9AA7BD',
   white: '#FFFFFF',
-  fontText: "'Readex', sans-serif",
-  fontDisplay: "'Alex', 'Readex', sans-serif",
-  fontElegant: "'Alex', 'Readex', sans-serif",
+  fontText: "'Tajawal', sans-serif",
+  fontDisplay: "'Tajawal', sans-serif",
+  fontElegant: "'Tajawal', sans-serif",
 };
 
 export const VIDEO = {width: 1080, height: 1920, fps: 30};
