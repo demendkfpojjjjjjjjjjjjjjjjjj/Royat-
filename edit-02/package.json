@@ -1,0 +1,11 @@
+{
+  "name": "royat-edit-02",
+  "private": true,
+  "description": "Edit 02: 'سلسلة تأمين الشركات' intro. Uses the parent folder's node_modules.",
+  "scripts": {
+    "prepare-media": "python3 scripts/prepare_media.py",
+    "sfx": "python3 scripts/make_sfx.py",
+    "studio": "../node_modules/.bin/remotion studio src/index.ts",
+    "render": "../node_modules/.bin/remotion render src/index.ts Main output/edit-02-final-1080x1920.mp4"
+  }
+}
