@@ -1,28 +1,29 @@
-// Visual identity: calm blue (primary) + black / white, soft yellow for accents only.
+// Visual identity (modern): deep ink backgrounds, calm blue as the primary colour,
+// white text, soft warm yellow only for accents. Change colours/fonts here only.
 export const theme = {
-  blue: '#5B8FC9',
-  blueLight: '#8DB6E3',
-  blueDeep: '#2A4E7E',
-  navy: '#0B1524',
-  navy2: '#122238',
-  glass: 'rgba(12, 22, 38, 0.78)',
-  glassBorder: 'rgba(141, 182, 227, 0.28)',
-  blueGlow: 'rgba(91, 143, 201, 0.45)',
-  yellow: '#E8C15A',
-  yellowDeep: '#C9A23E',
-  yellowGlow: 'rgba(232, 193, 90, 0.45)',
-  black: '#08090B',
-  g2: '#2A3442',
-  g3: '#6B7685',
-  g4: '#A9B2BE',
+  blue: '#5B95F0',
+  blueLight: '#A5C8FF',
+  blueDeep: '#2457B8',
+  navy: '#070B14',
+  navy2: '#0E1628',
+  glass: 'rgba(255, 255, 255, 0.06)',
+  glassBorder: 'rgba(255, 255, 255, 0.13)',
+  blueGlow: 'rgba(91, 149, 240, 0.40)',
+  yellow: '#F4C95D',
+  yellowDeep: '#D9A93A',
+  yellowGlow: 'rgba(244, 201, 93, 0.38)',
+  black: '#05070C',
+  g2: '#1C2536',
+  g3: '#6B778C',
+  g4: '#9AA7BD',
   white: '#FFFFFF',
-  fontText: "'Plex', sans-serif",
-  fontDisplay: "'Kufi', 'Plex', sans-serif",
-  fontElegant: "'Amiri', 'Plex', serif",
+  fontText: "'Readex', sans-serif",
+  fontDisplay: "'Alex', 'Readex', sans-serif",
+  fontElegant: "'Alex', 'Readex', sans-serif",
 };
 
 export const VIDEO = {width: 1080, height: 1920, fps: 30};
 
 // Layout zones for this footage: the head sits at ~y 570-950, so overlays use the
-// wall above it (TOP zone) or the chest area under it; captions sit low on the frame.
+// wall above it (TOP zone) or beside it; captions sit low on the frame.
 export const ZONE = {topY: 250, kineticY: 1330, captionY: 1600};

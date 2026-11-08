@@ -21,7 +21,7 @@ export const KineticLayer: React.FC = () => {
   const pBig = prog(frame, k.bf, 11);
   const pBot = prog(frame, k.btf, 8);
   const elegant = k.font === 'elegant';
-  const size = elegant ? Math.min(200, Math.floor(1700 / k.big.length)) : Math.min(170, Math.floor(1400 / k.big.length));
+  const size = Math.min(170, Math.floor(1350 / k.big.length));
   const glow = 22 + 8 * Math.sin((frame - k.bf) / 9);
   return (
     <AbsoluteFill style={{pointerEvents: 'none'}}>
@@ -29,24 +29,24 @@ export const KineticLayer: React.FC = () => {
       <div dir="rtl" style={{position: 'absolute', left: 40, right: 40, top: ZONE.kineticY + 120, transform: 'translateY(-50%)',
         textAlign: 'center', opacity: 1 - out, filter: `blur(${out * 8}px)`}}>
         {k.top ? (
-          <div style={{fontFamily: theme.fontText, fontWeight: 600, fontSize: 52, color: theme.white,
+          <div style={{fontFamily: theme.fontText, fontWeight: 500, fontSize: 52, color: theme.white,
             textShadow: '0 3px 14px rgba(0,0,0,0.75)', ...enter(pTop, 16, 8)}}>{k.top}</div>
         ) : null}
         <div style={{
-          fontFamily: elegant ? theme.fontElegant : theme.fontDisplay, fontWeight: elegant ? 700 : 800,
-          fontSize: size, lineHeight: elegant ? 1.35 : 1.3, margin: '0 0 4px',
-          color: elegant ? theme.white : theme.yellow,
-          textShadow: elegant
-            ? `0 0 ${glow}px ${theme.blueGlow}, 0 4px 20px rgba(0,0,0,0.7)`
-            : `0 0 ${glow}px ${theme.yellowGlow}, 0 4px 18px rgba(0,0,0,0.65)`,
-          opacity: pBig, transform: `scale(${lerp(pBig, 1.2, 1)})`, filter: `blur(${lerp(pBig, 16, 0)}px)`,
+          fontFamily: theme.fontDisplay, fontWeight: 800, fontSize: size, lineHeight: 1.3, margin: '0 0 6px', display: 'inline-block',
+          background: elegant
+            ? `linear-gradient(175deg, #FFFFFF 35%, ${theme.blueLight} 100%)`
+            : `linear-gradient(175deg, #FFE7A8 0%, ${theme.yellow} 60%, ${theme.yellowDeep} 100%)`,
+          WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
+          filter: `drop-shadow(0 8px ${glow + 8}px ${elegant ? theme.blueGlow : theme.yellowGlow}) drop-shadow(0 3px 10px rgba(0,0,0,0.55)) blur(${lerp(pBig, 16, 0)}px)`,
+          opacity: pBig, transform: `scale(${lerp(pBig, 1.2, 1)})`,
         }}>
           {k.big}
         </div>
-        {elegant ? <div style={{margin: '-6px auto 10px', height: 5, borderRadius: 3, width: 260 * prog(frame, k.bf + 5, 14), background: theme.yellow,
+        {elegant ? <div style={{margin: '0 auto 12px', height: 5, borderRadius: 3, width: 260 * prog(frame, k.bf + 5, 14), background: theme.yellow,
           boxShadow: `0 0 16px ${theme.yellowGlow}`}} /> : null}
         {k.bottom ? (
-          <div style={{fontFamily: theme.fontText, fontWeight: 600, fontSize: 48, color: theme.blueLight,
+          <div style={{fontFamily: theme.fontText, fontWeight: 500, fontSize: 48, color: theme.blueLight,
             textShadow: '0 3px 14px rgba(0,0,0,0.75)', ...enter(pBot, 14, 8)}}>{k.bottom}</div>
         ) : null}
       </div>

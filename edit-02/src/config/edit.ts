@@ -91,10 +91,11 @@ export type Scene = {
 export const scenes: Scene[] = [
   {type: 'icons', s: at('01', 2.98), e: at('01', 6.44), full: false,
     beats: {a: at('01', 3.16), b: at('01', 4.18), c: at('01', 5.4)}},
-  {type: 'race', s: at('01', 7.02), e: at('01', 11.3), full: true,
+  {type: 'race', s: at('01', 7.02), e: at('01', 11.9), full: true,
     beats: {bars: at('01', 7.6), slow: at('01', 8.52), q: at('01', 10.12)}},
-  // MANDATORY window (output 00:12 -> 00:16 lies inside this scene).
-  {type: 'reality', s: at('01', 11.3), e: at('02', 1.6), full: false,
+  // MANDATORY window (output 00:12 -> 00:16 lies inside this scene). Full screen: the
+  // speaker is fully covered from "الحقيقة" through "وتوسّع خدماتها" (requested).
+  {type: 'reality', s: at('01', 11.9), e: at('02', 1.0), full: true,
     beats: {title: at('01', 12.04), sub: at('01', 12.58), left: at('01', 14.1), right: at('01', 14.9), dim: at('02', 0.82)}},
   {type: 'risk', s: at('02', 3.66), e: at('02', 9.68), full: true, hideCaptions: true,
     beats: {risk: at('02', 4.38), ready: at('02', 5.82), disaster: at('02', 8.22), after: at('02', 8.92)}},

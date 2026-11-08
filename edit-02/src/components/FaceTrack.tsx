@@ -29,7 +29,7 @@ const Shot: React.FC<{seg: (typeof placed)[number]}> = ({seg}) => {
         src={staticFile(`clips/source-${seg.src}.mp4`)}
         trimBefore={Math.round(seg.from * VIDEO.fps)}
         volume={() => fade}
-        style={{width: '100%', height: '100%', objectFit: 'cover'}}
+        style={{width: '100%', height: '100%', objectFit: 'cover', filter: 'saturate(0.9) contrast(1.05) brightness(1.01)'}}
       />
     </AbsoluteFill>
   );
@@ -48,7 +48,7 @@ export const FaceTrack: React.FC = () => (
 // Finishing: soft cinematic vignette + caption shade at the bottom.
 export const Grade: React.FC = () => (
   <AbsoluteFill style={{pointerEvents: 'none'}}>
-    <AbsoluteFill style={{background: 'radial-gradient(ellipse 90% 72% at 50% 40%, rgba(0,0,0,0) 55%, rgba(4,10,20,0.42) 100%)'}} />
+    <AbsoluteFill style={{background: 'radial-gradient(ellipse 90% 72% at 50% 40%, rgba(0,0,0,0) 55%, rgba(5,8,15,0.40) 100%)'}} />
     <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(0,0,0,0) 66%, rgba(5,10,18,0.62) 86%, rgba(5,10,18,0.78) 100%)'}} />
   </AbsoluteFill>
 );

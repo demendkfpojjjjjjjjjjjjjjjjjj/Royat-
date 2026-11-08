@@ -6,7 +6,6 @@ import {
   BellIcon, BookIcon, BuildingIcon, BulbIcon, CalcIcon, ChartUpIcon, CheckIcon, CloudIcon, DbIcon,
   GearIcon, InstituteIcon, ListIcon, RadarIcon, RefreshIcon, ServerIcon, ShieldIcon, UserIcon, WarnIcon,
 } from '../components/Icons';
-import {camScaleAt} from '../components/FaceTrack';
 import {Glass, Glyph3D, Shell, Tile3D} from './Kit';
 
 export type SceneProps = {beats: Record<string, number>; from: number; full: boolean};
@@ -86,67 +85,66 @@ export const RaceScene: React.FC<SceneProps> = ({beats, full}) => {
 };
 const ShieldIconSmall: React.FC<{size?: number; color?: string}> = ({size = 44, color = '#fff'}) => <ShieldIcon size={size} color={color} stroke={14} />;
 
-// ---------------------------------------------------------------- MANDATORY 12-16s: "the reality" overlay
-export const RealityScene: React.FC<SceneProps> = ({beats, from, full}) => {
+// ---------------------------------------------------------------- MANDATORY 12-16s: "the reality" (full screen)
+// The speaker is fully covered here. Title -> subline -> two growth cards, with a slow
+// camera push, parallax between layers and a live chart in each card.
+export const RealityScene: React.FC<SceneProps> = ({beats, full}) => {
   const f = useCurrentFrame();
-  const cam = camScaleAt(from + f);
-  const par = (cam - 1) * 0.45; // overlays move less than the footage -> parallax depth
-  const pT = prog(f, beats.title, 12);
+  const {durationInFrames: d} = useVideoConfig();
+  const cam = f / d; // 0 -> 1 across the scene
+  const pT = prog(f, Math.max(0, beats.title - 6), 12);
   const pS = prog(f, beats.sub, 10);
   const line = prog(f, beats.title + 6, 16);
-  const pl = usePop(beats.left);
-  const pr = usePop(beats.right);
-  const dim = prog(f, beats.dim, 10);
-  const bob = (o: number) => Math.sin((f + o) / 22) * 8;
-  const card = (side: 'left' | 'right', p: number, Icon: React.FC<{size?: number; color?: string}>, title: string, grow: number) => {
-    const isL = side === 'left';
-    const bars = [0.35, 0.55, 0.75, 1];
+  const dim = prog(f, beats.dim, 8);
+  const card = (p: number, x: number, Icon: React.FC<{size?: number; color?: string}>, title: string, kind: 'bars' | 'line', start: number) => {
+    const draw = prog(f, start + 6, 22);
     return (
-      <div style={abs({[side]: 56 - par * 120, top: 640 + bob(isL ? 0 : 30) - par * 60, width: 300, perspective: 1000,
-        opacity: Math.min(1, p * 1.4) * (1 - dim * 0.45), filter: `saturate(${1 - dim * 0.7})`})}>
-        <Glass style={{padding: '26px 24px', transform: `rotateY(${(isL ? 26 : -26) * (1 - 0.15 * p) + (1 - p) * (isL ? 50 : -50)}deg) scale(${lerp(p, 0.7, 1 + par * 0.3)})`,
-          transformOrigin: isL ? '0% 50%' : '100% 50%'}}>
-          <Tile3D size={96} spin={isL ? 0 : 50}><Icon size={58} color={theme.white} /></Tile3D>
-          <div style={D({marginTop: 18, fontWeight: 800, fontSize: 44, color: theme.white, lineHeight: 1.3})}>{title}</div>
-          <div style={{display: 'flex', alignItems: 'flex-end', gap: 12, height: 90, marginTop: 16, direction: 'ltr'}}>
-            {bars.map((h, i) => {
-              const pb = prog(f, (isL ? beats.left : beats.right) + 6 + i * 4, 12) * grow;
-              return <div key={i} style={{flex: 1, height: `${h * 100 * pb}%`, borderRadius: 8,
-                background: i === 3 ? theme.yellow : `linear-gradient(180deg, ${theme.blueLight}, ${theme.blue})`}} />;
-            })}
+      <div style={abs({left: x, top: 700 - cam * 26, width: 440, perspective: 1200,
+        opacity: Math.min(1, p * 1.5) * (1 - dim * 0.4)})}>
+        <Glass style={{padding: '34px 32px 30px', transform: `rotateX(${lerp(p, 28, 0)}deg) translateY(${lerp(p, 70, 0)}px)`, transformOrigin: '50% 100%'}}>
+          <Tile3D size={84} spin={x}><Icon size={50} color={theme.white} /></Tile3D>
+          <div style={D({marginTop: 22, fontWeight: 700, fontSize: 50, color: theme.white, lineHeight: 1.3, whiteSpace: 'nowrap'})}>{title}</div>
+          <div style={{height: 210, marginTop: 24, borderRadius: 22, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+            position: 'relative', overflow: 'hidden', direction: 'ltr'}}>
+            {[0.25, 0.5, 0.75].map((g) => <div key={g} style={abs({left: 0, right: 0, top: `${g * 100}%`, height: 1, background: 'rgba(255,255,255,0.06)'})} />)}
+            {kind === 'bars' ? (
+              <div style={abs({left: 26, right: 26, bottom: 18, top: 18, display: 'flex', alignItems: 'flex-end', gap: 16})}>
+                {[0.32, 0.48, 0.6, 0.78, 1].map((h, i) => {
+                  const pb = prog(f, start + 6 + i * 4, 14);
+                  return <div key={i} style={{flex: 1, height: `${h * 100 * pb}%`, borderRadius: 10,
+                    background: i === 4 ? `linear-gradient(180deg, #FFE29A, ${theme.yellow})` : `linear-gradient(180deg, ${theme.blueLight}, ${theme.blue})`,
+                    boxShadow: i === 4 ? `0 0 24px ${theme.yellowGlow}` : 'none'}} />;
+                })}
+              </div>
+            ) : (
+              <svg width="100%" height="100%" viewBox="0 0 376 230" preserveAspectRatio="none" style={abs({inset: 0})}>
+                <defs>
+                  <linearGradient id="lf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={theme.blue} stopOpacity="0.45" /><stop offset="1" stopColor={theme.blue} stopOpacity="0" /></linearGradient>
+                </defs>
+                <path d="M10 200 C 70 190, 100 160, 150 150 S 230 110, 270 80 S 340 40, 366 26 L366 230 L10 230 Z" fill="url(#lf)" opacity={draw} />
+                <path d="M10 200 C 70 190, 100 160, 150 150 S 230 110, 270 80 S 340 40, 366 26" stroke={theme.blueLight} strokeWidth={5} fill="none"
+                  strokeLinecap="round" strokeDasharray={480} strokeDashoffset={480 * (1 - draw)} />
+                <circle cx={366} cy={26} r={9} fill={theme.yellow} opacity={draw > 0.95 ? 1 : 0} style={{filter: `drop-shadow(0 0 8px ${theme.yellowGlow})`}} />
+              </svg>
+            )}
           </div>
         </Glass>
       </div>
     );
   };
-  // Guide lines from each card toward the speaker's hands.
-  const guide = (p: number, x0: number, x1: number, y0: number, y1: number, k: number) => {
-    const d = `M${x0} ${y0} C ${(x0 + x1) / 2} ${y0 + 40}, ${x1} ${(y0 + y1) / 2 - 60}, ${x1} ${y1}`;
-    const t = ((f - k) % 40) / 40;
-    return (
-      <g opacity={p * (1 - dim * 0.6)}>
-        <path d={d} stroke={theme.blueLight} strokeOpacity={0.55} strokeWidth={3} strokeDasharray="6 10" strokeDashoffset={-f * 1.5} fill="none" />
-        <circle cx={lerp(t, x0, x1)} cy={lerp(t * t, y0, y1)} r={6} fill={theme.yellow} opacity={0.9} />
-      </g>
-    );
-  };
   return (
-    <Shell full={full} topShade>
-      <div dir="rtl" style={abs({left: 40, right: 40, top: 170 - par * 80, textAlign: 'center'})}>
-        <div style={E({fontWeight: 700, fontSize: 150, lineHeight: 1.3, color: theme.white,
-          textShadow: `0 0 26px ${theme.blueGlow}, 0 4px 20px rgba(0,0,0,0.7)`, opacity: pT,
-          transform: `scale(${lerp(pT, 1.25, 1)})`, filter: `blur(${lerp(pT, 16, 0)}px)`})}>الحقيقة</div>
-        <div style={{margin: '-4px auto 14px', height: 5, borderRadius: 3, width: 300 * line, background: theme.yellow, boxShadow: `0 0 16px ${theme.yellowGlow}`}} />
-        <div style={T({fontWeight: 600, fontSize: 50, color: theme.white, textShadow: shadowTxt, ...enter(pS, 14, 8)})}>
-          أكثر الشركات <span style={{color: theme.yellow}}>مهتمة</span>
+    <Shell full={full}>
+      <div dir="rtl" style={abs({left: 40, right: 40, top: 250 - cam * 50, textAlign: 'center'})}>
+        <div style={D({fontWeight: 800, fontSize: 168, lineHeight: 1.3, display: 'inline-block',
+          background: `linear-gradient(175deg, #FFFFFF 30%, ${theme.blueLight} 100%)`, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
+          filter: `drop-shadow(0 10px 40px ${theme.blueGlow}) blur(${lerp(pT, 14, 0)}px)`, opacity: pT, transform: `scale(${lerp(pT, 1.18, 1)})`})}>الحقيقة</div>
+        <div style={{margin: '0 auto 22px', height: 7, borderRadius: 4, width: 220 * line, background: theme.yellow, boxShadow: `0 0 18px ${theme.yellowGlow}`}} />
+        <div style={T({fontWeight: 500, fontSize: 56, color: theme.white, ...enter(pS, 16, 8)})}>
+          أكثر الشركات <span style={{color: theme.yellow, fontWeight: 700}}>مهتمة</span>
         </div>
       </div>
-      <svg width={1080} height={1920} style={abs({left: 0, top: 0})}>
-        {guide(pl, 300, 470, 960, 1150, beats.left)}
-        {guide(pr, 780, 610, 960, 1150, beats.right)}
-      </svg>
-      {card('left', pl, GearIcon, 'تطوّر أنظمة', 1)}
-      {card('right', pr, ChartUpIcon, 'توسّع خدماتها', 1)}
+      {card(prog(f, beats.left - 4, 16), 560, GearIcon, 'تطوّر أنظمة', 'bars', beats.left)}
+      {card(prog(f, beats.right - 4, 16), 80, ChartUpIcon, 'توسّع خدماتها', 'line', beats.right)}
     </Shell>
   );
 };
@@ -248,7 +246,7 @@ export const SeriesScene: React.FC<SceneProps> = ({beats, full}) => {
       </div>
       <div dir="rtl" style={abs({left: 40, right: 40, top: 780, textAlign: 'center'})}>
         <div style={T({fontWeight: 600, fontSize: 56, color: theme.blueLight, letterSpacing: 2, ...enter(pl, 14, 8)})}>سلسلة</div>
-        <div style={D({fontWeight: 800, fontSize: 124, lineHeight: 1.35, color: theme.white, textShadow: `0 0 30px ${theme.blueGlow}`,
+        <div style={D({fontWeight: 800, fontSize: 112, lineHeight: 1.35, color: theme.white, textShadow: `0 0 30px ${theme.blueGlow}`,
           opacity: pt, transform: `scale(${lerp(pt, 1.15, 1)})`, filter: `blur(${lerp(pt, 14, 0)}px)`})}>تأمين الشركات</div>
         <div style={{margin: '8px auto 0', height: 7, borderRadius: 4, width: 420 * line, background: theme.yellow, boxShadow: `0 0 20px ${theme.yellowGlow}`}} />
       </div>
