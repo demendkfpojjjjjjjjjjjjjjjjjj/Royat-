@@ -25,11 +25,22 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 MODELS = pathlib.Path(sys.argv[1])
 IDS = sys.argv[2:] or [f"0{i}" for i in range(1, 8)]
 
-# Coverage: the flower diameter relative to the face-oval size. The face oval from the
-# landmarks spans forehead-to-chin; 1.45x adds a safe margin on every side.
-SAFETY = 1.3
-MOTION_GAIN = 2.5      # extra px of diameter per px/frame of head speed
-MIN_D = 260            # never smaller than this (px, source scale)
+# Coverage target: the FEATURES (eyebrows, eyes, nose, mouth) must always be hidden,
+# while the outer face edges may show (as in assets/like-this.jpg). The flower diameter is
+# the features' extent x SAFETY, plus a motion margin.
+SAFETY = 1.15
+MOTION_GAIN = 1.4      # extra px of diameter per px/frame of head speed
+MIN_D = 150            # never smaller than this (px, source scale)
+
+# MediaPipe Face Mesh indices of the identifying features.
+FEATURES = sorted(set([
+    70, 63, 105, 66, 107, 55, 65, 52, 53, 46,            # right eyebrow
+    300, 293, 334, 296, 336, 285, 295, 282, 283, 276,    # left eyebrow
+    33, 7, 163, 144, 145, 153, 154, 155, 133, 246, 161, 160, 159, 158, 157, 173,      # right eye
+    263, 249, 390, 373, 374, 380, 381, 382, 362, 466, 388, 387, 386, 385, 384, 398,  # left eye
+    1, 2, 4, 5, 6, 19, 94, 97, 98, 168, 195, 197, 326, 327, 64, 294, 48, 278,         # nose
+    61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291, 185, 40, 39, 37, 0, 267, 269, 270, 409,  # lips
+]))
 
 BaseOptions = mp.tasks.BaseOptions
 vision = mp.tasks.vision
@@ -54,7 +65,7 @@ def detect_clip(path):
     cap = cv2.VideoCapture(str(path))
     fps = cap.get(cv2.CAP_PROP_FPS) or 30
     lm, det = make_landmarker(), make_detector()
-    raw, src = [], []
+    raw, src, feats = [], [], []
     i = 0
     while True:
         ok, frame = cap.read()
@@ -67,25 +78,74 @@ def detect_clip(path):
         r = lm.detect_for_video(image, ts)
         entry = None
         if r.face_landmarks:
-            pts = np.array([[p.x * w, p.y * h] for p in r.face_landmarks[0]])
+            allp = np.array([[p.x * w, p.y * h] for p in r.face_landmarks[0]])
+            pts = allp[FEATURES]
             x0, y0 = pts.min(0); x1, y1 = pts.max(0)
-            le, re = pts[33], pts[263]
+            le, re = allp[33], allp[263]
             roll = float(np.degrees(np.arctan2(re[1] - le[1], re[0] - le[0])))
             entry = [(x0 + x1) / 2, (y0 + y1) / 2, max(x1 - x0, y1 - y0), roll]
             src.append("lm")
+            feats.append(pts.astype(np.float32))
         else:
             d = det.detect_for_video(image, ts)
             if d.detections:
                 b = max(d.detections, key=lambda x: x.categories[0].score).bounding_box
-                # BlazeFace boxes are tighter than the landmark oval: grow them.
-                entry = [b.origin_x + b.width / 2, b.origin_y + b.height * 0.45, max(b.width, b.height) * 1.3, None]
+                # BlazeFace's box spans roughly brows-to-chin: use it as the feature extent.
+                entry = [b.origin_x + b.width / 2, b.origin_y + b.height * 0.45, max(b.width, b.height) * 0.95, None]
                 src.append("det")
+                feats.append(None)
             else:
                 src.append("none")
+                feats.append(None)
         raw.append(entry)
         i += 1
     cap.release()
-    return raw, src, fps, w, h
+    return raw, src, feats, fps, w, h
+
+
+FLOWER_BOX = 1.12   # must match src/config/theme.ts
+GUARD_GROW = 1.06   # feature outline grown by 6% before requiring full coverage
+_flower = None
+
+
+def flower_alpha(shape, cx, cy, d, rot):
+    global _flower
+    if _flower is None:
+        _flower = cv2.imread(str(ROOT / "public" / "flower.png"), cv2.IMREAD_UNCHANGED)
+    H, W = shape
+    size = max(8, int(d * FLOWER_BOX))
+    a = cv2.resize(_flower[:, :, 3], (size, int(size * _flower.shape[0] / _flower.shape[1])), interpolation=cv2.INTER_AREA)
+    M = cv2.getRotationMatrix2D((a.shape[1] / 2, a.shape[0] / 2), -rot, 1.0)
+    a = cv2.warpAffine(a, M, (a.shape[1], a.shape[0]), flags=cv2.INTER_LINEAR, borderValue=0)
+    out = np.zeros((H, W), np.uint8)
+    x0, y0 = int(round(cx - a.shape[1] / 2)), int(round(cy - a.shape[0] / 2))
+    xa, ya, xb, yb = max(0, x0), max(0, y0), min(W, x0 + a.shape[1]), min(H, y0 + a.shape[0])
+    if xa < xb and ya < yb:
+        out[ya:yb, xa:xb] = a[ya - y0:yb - y0, xa - x0:xb - x0]
+    return out > 216
+
+
+def guarantee(track, feats, shape):
+    """Grow the diameter per frame until the (grown) feature outline is fully covered."""
+    need = np.ones(len(track))
+    for i, pts in enumerate(feats):
+        if pts is None:
+            continue
+        c = pts.mean(0)
+        hull = cv2.convexHull(((pts - c) * GUARD_GROW + c).astype(np.int32))
+        face = np.zeros(shape, np.uint8)
+        cv2.fillConvexPoly(face, hull, 1)
+        face = face.astype(bool)
+        cx, cy, d, rot = track[i]
+        m = 1.0
+        while m < 2.2 and (face & ~flower_alpha(shape, cx, cy, d * m, rot)).any():
+            m += 0.03
+        need[i] = m
+    xp = np.pad(need, 3, mode="edge")
+    need = np.array([xp[i:i + 7].max() for i in range(len(need))])  # hold the bigger size around each frame
+    track = track.copy()
+    track[:, 2] *= need
+    return track, need
 
 
 def fill_and_smooth(raw):
@@ -108,7 +168,7 @@ def fill_and_smooth(raw):
     med_size = rolling_median(arr[:, 2], 15)
     med_cx, med_cy = rolling_median(arr[:, 0], 15), rolling_median(arr[:, 1], 15)
     off = np.hypot(arr[:, 0] - med_cx, arr[:, 1] - med_cy)
-    outlier = (arr[:, 2] > med_size * 1.35) | (arr[:, 2] < med_size * 0.65) | (off > med_size * 0.45)
+    outlier = (arr[:, 2] > med_size * 1.6) | (arr[:, 2] < med_size * 0.5) | ((off > med_size * 1.2) & (arr[:, 2] > med_size * 1.3))
     arr[outlier] = np.nan
     print(f"  outlier frames removed: {int(outlier.sum())}", flush=True)
 
@@ -139,18 +199,21 @@ def fill_and_smooth(raw):
     return np.stack([cx, cy, d, rot], 1)
 
 
-for sid in IDS:
-    path = ROOT / "assets" / f"source-{sid}.mp4"
-    raw, src, fps, w, h = detect_clip(path)
-    track = fill_and_smooth(raw)
-    out = ROOT / "public" / "track" / f"source-{sid}.json"
-    json.dump({"fps": round(fps, 3), "w": w, "h": h,
-               "frames": [[round(float(v), 1) for v in row] for row in track]}, open(out, "w"))
-    stats = {k: src.count(k) for k in ("lm", "det", "none")}
-    # longest run of frames without any detection (filled by interpolation)
-    longest = run = 0
-    for s in src:
-        run = run + 1 if s == "none" else 0
-        longest = max(longest, run)
-    print(f"source-{sid}: {len(src)} frames  landmarks={stats['lm']} detector={stats['det']} none={stats['none']} longest-gap={longest}", flush=True)
-    json.dump({"src": src}, open(ROOT / "analysis" / f"track-sources-{sid}.json", "w"))
+if __name__ == "__main__":
+    for sid in IDS:
+        path = ROOT / "assets" / f"source-{sid}.mp4"
+        raw, src, feats, fps, w, h = detect_clip(path)
+        track = fill_and_smooth(raw)
+        track, need = guarantee(track, feats, (h, w))
+        print(f"  guarantee: enlarged {int((need > 1.0).sum())} frames (max x{need.max():.2f})", flush=True)
+        out = ROOT / "public" / "track" / f"source-{sid}.json"
+        json.dump({"fps": round(fps, 3), "w": w, "h": h,
+                   "frames": [[round(float(v), 1) for v in row] for row in track]}, open(out, "w"))
+        stats = {k: src.count(k) for k in ("lm", "det", "none")}
+        # longest run of frames without any detection (filled by interpolation)
+        longest = run = 0
+        for s in src:
+            run = run + 1 if s == "none" else 0
+            longest = max(longest, run)
+        print(f"source-{sid}: {len(src)} frames  landmarks={stats['lm']} detector={stats['det']} none={stats['none']} longest-gap={longest}", flush=True)
+        json.dump({"src": src}, open(ROOT / "analysis" / f"track-sources-{sid}.json", "w"))

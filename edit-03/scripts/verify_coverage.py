@@ -1,9 +1,10 @@
 """Geometric privacy check (the authoritative one).
 
-For every frame: find the real face outline on the ORIGINAL frame (convex hull of the
-478 MediaPipe landmarks, grown by 4% for safety), place the flower exactly as the edit
-does (same track, same size rule), and measure the share of face pixels under opaque
-flower (alpha > 0.85). Every frame must be 100% covered.
+For every frame: find the identifying features on the ORIGINAL frame (eyebrows, eyes,
+nose, mouth — convex hull of those MediaPipe landmarks, grown by 10% for safety), place
+the flower exactly as the edit does, and measure the share of feature pixels under opaque
+flower (alpha > 0.85). Every frame must be 100% covered. (The outer face edges are allowed
+to show, as requested.)
 
 Usage: python3 scripts/verify_coverage.py <models-dir> [source ids...]
 """
@@ -19,7 +20,9 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 MODELS = pathlib.Path(sys.argv[1])
 IDS = sys.argv[2:] or [f"0{i}" for i in range(1, 8)]
 FLOWER_BOX = 1.12   # must match FLOWER_BOX in src/config/theme.ts
-GROW = 1.04
+GROW = float(__import__("os").environ.get("COVER_GROW", "1.10"))
+sys.path.insert(0, str(ROOT / 'scripts'))
+from track_face import FEATURES  # noqa: E402
 
 vision = mp.tasks.vision
 flower = cv2.imread(str(ROOT / "public" / "flower.png"), cv2.IMREAD_UNCHANGED)
@@ -55,7 +58,7 @@ for sid in IDS:
         H, W = frame.shape[:2]
         r = lm.detect_for_video(mp.Image(image_format=mp.ImageFormat.SRGB, data=cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)), int(i * 1000 / 30))
         if r.face_landmarks:
-            pts = np.array([[p.x * W, p.y * H] for p in r.face_landmarks[0]], np.float32)
+            pts = np.array([[p.x * W, p.y * H] for p in r.face_landmarks[0]], np.float32)[FEATURES]
             c = pts.mean(0)
             hull = cv2.convexHull(((pts - c) * GROW + c).astype(np.int32))
             face = np.zeros((H, W), np.uint8)
