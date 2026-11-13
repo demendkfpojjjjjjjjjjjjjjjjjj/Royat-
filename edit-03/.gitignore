@@ -1,0 +1,5 @@
+public/clips/
+analysis/*.wav
+assets/source-*.mp4
+assets/like-this.jpg
+analysis/whisper-words*.json
