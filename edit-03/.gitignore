@@ -4,3 +4,5 @@ assets/source-*.mp4
 assets/like-this.jpg
 analysis/whisper-words*.json
 output/
+analysis/*.jpg
+public/clips_sharp/

@@ -19,15 +19,15 @@ export const Tracker: React.FC = () => {
   return (
     <div dir="rtl" style={{position: 'absolute', top: 26, left: 0, right: 0, display: 'flex', justifyContent: 'center', opacity: o}}>
       <div style={{display: 'flex', gap: 10, alignItems: 'center', padding: '10px 18px', borderRadius: 999,
-        background: 'linear-gradient(160deg, rgba(10,21,48,0.75), rgba(5,10,24,0.65))', border: '1.5px solid rgba(191,217,255,0.16)', backdropFilter: 'blur(12px)'}}>
+        background: theme.glass, border: '1.5px solid rgba(191,217,255,0.16)', backdropFilter: theme.blur}}>
         {steps.map((st, i) => {
           const done = i < cur, active = i === cur;
           const p = active ? prog(f, st, 12) : 1;
           return (
             <div key={i} style={{width: active ? 40 + 40 * p : 40, height: 40, borderRadius: 20, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: active ? `linear-gradient(160deg, #FFE29A, ${theme.gold})` : done ? theme.royal : 'rgba(255,255,255,0.08)',
-              boxShadow: active ? `0 0 20px ${theme.goldGlow}` : 'none', fontFamily: theme.font, fontWeight: 800, fontSize: 22,
-              color: active ? '#1D1504' : done ? theme.white : theme.muted}}>{i + 1}</div>
+              background: active ? theme.gold : done ? theme.blue : 'rgba(255,255,255,0.08)',
+              boxShadow: 'none', fontFamily: theme.font, fontWeight: 800, fontSize: 22,
+              color: active ? theme.ink : done ? theme.white : theme.muted}}>{i + 1}</div>
           );
         })}
       </div>

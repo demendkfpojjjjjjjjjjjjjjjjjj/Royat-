@@ -2,7 +2,7 @@ import React from 'react';
 import {AbsoluteFill, Sequence, interpolate, useCurrentFrame} from 'remotion';
 import {SceneType, scenes} from '../config/edit';
 import {toFrame} from '../lib/time';
-import {Backdrop} from './Stage';
+import {theme} from '../config/theme';
 import * as S from '../scenes/Scenes';
 
 const registry: Record<SceneType, React.FC<S.SceneProps>> = {
@@ -14,16 +14,15 @@ const registry: Record<SceneType, React.FC<S.SceneProps>> = {
   mistakes: S.MistakesScene, outro: S.OutroScene,
 };
 
-// Full-screen scenes get an opaque cinematic backdrop (covers the video card).
-const FullBackdrop: React.FC<{from: number; dur: number}> = ({from, dur}) => {
+// Full-screen scenes: a deep frosted-glass layer over the video (solid tint + strong blur).
+const FullBackdrop: React.FC<{from: number; dur: number}> = ({dur}) => {
   const f = useCurrentFrame();
   const o = interpolate(f, [0, 8, dur - 8, dur], [0, 1, 1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   // masked reveal: a soft circular wipe opening from the centre
   const r = interpolate(f, [0, 12], [0, 140], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   return (
-    <AbsoluteFill style={{opacity: o, clipPath: f < 12 ? `circle(${r}% at 50% 45%)` : undefined}}>
-      <Backdrop t={from + f} />
-    </AbsoluteFill>
+    <AbsoluteFill style={{opacity: o, clipPath: f < 12 ? `circle(${r}% at 50% 45%)` : undefined,
+      background: theme.glassStrong, backdropFilter: 'blur(34px) saturate(130%)'}} />
   );
 };
 

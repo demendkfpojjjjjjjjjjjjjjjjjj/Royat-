@@ -1,26 +1,25 @@
-// Cinematic blue + gold identity. Change colours / fonts / layout numbers here only.
+// Modern flat identity: SOLID colours only (no gradients). Depth comes from translucent
+// frosted glass (solid colour + transparency + backdrop blur), not from gradients.
 export const theme = {
-  // blues (primary)
-  navy: '#050A18',
-  navy2: '#0A1530',
-  deep: '#0F2A5C',
-  royal: '#2D5BD8',
-  blue: '#4C86F5',
-  electric: '#6FB2FF',
-  ice: '#BFD9FF',
-  // gold (accent, used sparingly)
-  gold: '#F2C462',
-  goldDeep: '#C9952F',
-  goldGlow: 'rgba(242, 196, 98, 0.42)',
-  blueGlow: 'rgba(76, 134, 245, 0.42)',
-  // neutrals
-  black: '#03060D',
-  graphite: '#121A2B',
-  muted: '#93A3BE',
+  navy: '#0B1630',
+  blue: '#3B82F6',      // primary
+  blueDeep: '#1E3A8A',
+  sky: '#93C5FD',       // light blue for secondary text
+  gold: '#F5C04A',      // accent, used sparingly
+  ink: '#1A1405',       // text on gold
   white: '#FFFFFF',
-  glass: 'linear-gradient(160deg, rgba(255,255,255,0.11), rgba(255,255,255,0.035))',
-  glassBorder: 'rgba(191, 217, 255, 0.18)',
+  muted: '#B4C0D3',
+  black: '#03060D',
+  // frosted glass
+  glass: 'rgba(11, 22, 48, 0.55)',
+  glassStrong: 'rgba(8, 16, 36, 0.72)',
+  glassLight: 'rgba(255, 255, 255, 0.12)',
+  glassBorder: 'rgba(255, 255, 255, 0.16)',
+  blur: 'blur(22px) saturate(140%)',
   font: "'Tajawal', sans-serif",
+  // kept for older references
+  electric: '#3B82F6', royal: '#1E3A8A', deep: '#1E3A8A', ice: '#93C5FD', goldDeep: '#F5C04A',
+  goldGlow: 'rgba(0,0,0,0)', blueGlow: 'rgba(0,0,0,0)', navy2: '#0B1630', graphite: '#121A2B',
 };
 
 export const VIDEO = {width: 1080, height: 1920, fps: 30};
@@ -28,5 +27,5 @@ export const VIDEO = {width: 1080, height: 1920, fps: 30};
 // The flower image box relative to the tracked diameter (must match scripts/verify_coverage.py).
 export const FLOWER_BOX = 1.12;
 
-// Captions sit in a glass pill near the bottom edge.
+// Captions sit in a frosted pill near the bottom edge.
 export const CAPTION_Y = 1772;

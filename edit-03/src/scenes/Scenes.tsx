@@ -7,7 +7,7 @@ import {
   KeyIcon, LaptopIcon, LockIcon, MailIcon, NetworkIcon, PenIcon, PhoneIcon, QuestionIcon, RadarIcon, RefreshIcon,
   ServerIcon, ShieldIcon, UserIcon, WarnIcon,
 } from '../components/Icons';
-import {Badge, Chip, Glass, Glyph, Headline, Rings, Shell, abs, enterX, enterY, txt, usePop} from './Kit';
+import {Badge, Chip, Glass, Glyph, Headline, Plate, Rings, Shell, abs, enterX, enterY, txt, usePop} from './Kit';
 
 export type SceneProps = {beats: Record<string, number>; props: Record<string, string | number>};
 type IconC = React.FC<{size?: number; color?: string; stroke?: number}>;
@@ -43,6 +43,7 @@ export const QuestionScene: React.FC<SceneProps> = ({beats}) => {
   const pa = usePop(beats.a), pb = usePop(beats.b);
   return (
     <Shell>
+      <Plate top={BELOW - 40} height={330} />
       <div style={abs({left: 60, top: BELOW - 10, width: 230, height: 270, display: 'flex', alignItems: 'center', justifyContent: 'center',
         opacity: Math.min(1, pq * 1.3), transform: `scale(${lerp(pq, 0.5, 1)})`})}>
         <Rings size={240} gold style={{left: -5, top: 15}} />
@@ -66,6 +67,7 @@ export const EpisodeScene: React.FC<SceneProps> = ({beats}) => {
   const pb = usePop(beats.badge), pt = prog(f, beats.title, 14), pz = prog(f, beats.az, 18);
   return (
     <Shell>
+      <Plate top={ABOVE - 20} height={440} />
       <div dir="rtl" style={abs({left: 40, right: 40, top: ABOVE + 10, textAlign: 'center'})}>
         <div style={{opacity: Math.min(1, pb * 1.3), transform: `scale(${lerp(pb, 0.7, 1)})`}}><Chip tone="gold" size={34}>الحلقة الأولى</Chip></div>
         <div style={{marginTop: 18, opacity: pt, transform: `scale(${lerp(pt, 1.15, 1)})`, filter: `blur(${lerp(pt, 14, 0)}px)`}}>
@@ -73,7 +75,7 @@ export const EpisodeScene: React.FC<SceneProps> = ({beats}) => {
         </div>
         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 22, marginTop: 10, opacity: pz}}>
           <Glyph text="أ" size={84} />
-          <div style={{width: 360 * pz, height: 4, borderRadius: 2, background: `linear-gradient(270deg, ${theme.gold}, ${theme.electric})`, boxShadow: `0 0 16px ${theme.blueGlow}`}} />
+          <div style={{width: 360 * pz, height: 4, borderRadius: 2, background: theme.gold}} />
           <Glyph text="ي" size={84} />
         </div>
       </div>
@@ -92,7 +94,7 @@ export const HostScene: React.FC<SceneProps> = ({beats}) => {
         <div style={enterX(pn, 80)}>
           <Glass gold style={{padding: '26px 24px', textAlign: 'center'}}>
             <div style={txt({fontWeight: 500, fontSize: 28, color: muted})}>أنا</div>
-            <Headline size={78} gold>رؤية</Headline>
+            <Headline size={78} gold>رؤيت</Headline>
           </Glass>
         </div>
         <div style={{position: 'relative', height: 420, marginTop: 70, perspective: 900}}>
@@ -100,7 +102,7 @@ export const HostScene: React.FC<SceneProps> = ({beats}) => {
             const p = prog(f, beats.build + i * 6, 14);
             return (
               <div key={i} style={abs({left: 30, right: 30, bottom: i * 78, height: 70, borderRadius: 18,
-                background: i === 3 ? `linear-gradient(160deg, #FFE29A, ${theme.gold})` : `linear-gradient(160deg, rgba(111,178,255,0.55), rgba(45,91,216,0.35))`,
+                background: i === 3 ? theme.gold : 'rgba(59,130,246,0.55)', backdropFilter: theme.blur,
                 border: '1.5px solid rgba(191,217,255,0.4)', boxShadow: `0 18px 40px rgba(0,0,0,0.35)`,
                 transform: `rotateX(52deg) rotateZ(${-8 + Math.sin((f + i * 20) / 40) * 3}deg) translateY(${lerp(p, -220, 0)}px)`, opacity: Math.min(1, p * 1.5)})} />
             );
@@ -121,8 +123,9 @@ export const PathScene: React.FC<SceneProps> = ({beats}) => {
   const line = prog(f, beats.a, beats.c - beats.a + 10, (x) => x);
   return (
     <Shell>
+      <Plate top={BELOW - 30} height={310} />
       <div style={abs({left: 150, right: 150, top: BELOW + 60, height: 4, borderRadius: 2, background: 'rgba(191,217,255,0.15)'})}>
-        <div style={abs({right: 0, top: 0, height: 4, width: `${line * 100}%`, borderRadius: 2, background: `linear-gradient(270deg, ${theme.electric}, ${theme.gold})`, boxShadow: `0 0 18px ${theme.blueGlow}`})} />
+        <div style={abs({right: 0, top: 0, height: 4, width: `${line * 100}%`, borderRadius: 2, background: theme.gold})} />
       </div>
       <div dir="rtl" style={abs({left: 40, right: 40, top: BELOW + 10, display: 'flex', justifyContent: 'space-between'})}>
         {steps.map(([b, I, t], i) => {
@@ -172,7 +175,7 @@ export const PercentScene: React.FC<SceneProps> = ({beats}) => {
   const n = Math.round(100 * pn);
   return (
     <Shell>
-      <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(3,6,13,0) 46%, rgba(3,6,13,0.7) 68%, rgba(3,6,13,0.85) 100%)'}} />
+      <div style={abs({left: 40, right: 40, top: 1220, height: 470, borderRadius: 36, background: theme.glassStrong, backdropFilter: theme.blur, border: `1.5px solid ${theme.glassBorder}`})} />
       <div dir="rtl" style={abs({left: 40, right: 40, top: 1250, textAlign: 'center'})}>
         <div style={{...enterY(p0, 16)}}><Chip tone="glass" size={34}>لكن خلّي بالك</Chip></div>
         <div style={{...enterY(p1, 16), marginTop: 16}}><span style={txt({fontWeight: 700, fontSize: 54, color: W})}>لا يوجد شيء اسمه حماية</span></div>
@@ -182,7 +185,7 @@ export const PercentScene: React.FC<SceneProps> = ({beats}) => {
           </span>
           <svg width={560} height={240} style={abs({left: '50%', top: 10, marginLeft: -280})}>
             <path d="M40 190 L520 60" stroke={W} strokeWidth={12} strokeLinecap="round" strokeDasharray={520} strokeDashoffset={520 * (1 - ps)}
-              style={{filter: `drop-shadow(0 0 12px ${theme.blueGlow})`}} />
+               />
           </svg>
         </div>
       </div>
@@ -196,6 +199,7 @@ export const BasicsScene: React.FC<SceneProps> = ({beats}) => {
   const pq = prog(f, beats.q, 10), pt = prog(f, beats.title, 14);
   return (
     <Shell>
+      <Plate top={ABOVE - 10} height={410} />
       <div dir="rtl" style={abs({left: 40, right: 40, top: ABOVE + 20, textAlign: 'center'})}>
         <div style={enterY(pq, 16)}><Chip size={32}>جوابًا على السؤال اللي فوق</Chip></div>
         <div style={{marginTop: 14, opacity: pt, transform: `scale(${lerp(pt, 1.2, 1)})`, filter: `blur(${lerp(pt, 14, 0)}px)`}}>
@@ -223,7 +227,7 @@ export const UnknownScene: React.FC<SceneProps> = ({beats}) => {
       <div style={abs({left: 540 - 330, top: 980 - 330, width: 660, height: 660})}>
         {[1, 0.7, 0.4].map((k) => <div key={k} style={abs({inset: (1 - k) * 330, borderRadius: '50%', border: '1.5px solid rgba(111,178,255,0.28)'})} />)}
         <div style={abs({inset: 0, borderRadius: '50%', opacity: f > beats.scan ? 1 : 0,
-          background: `conic-gradient(from ${sweep}deg, rgba(111,178,255,0.35), rgba(111,178,255,0) 60deg, rgba(111,178,255,0) 360deg)`})} />
+          background: 'rgba(147,197,253,0.22)', clipPath: `polygon(50% 50%, ${50 + 70 * Math.cos(sweep * Math.PI / 180)}% ${50 + 70 * Math.sin(sweep * Math.PI / 180)}%, ${50 + 70 * Math.cos((sweep + 40) * Math.PI / 180)}% ${50 + 70 * Math.sin((sweep + 40) * Math.PI / 180)}%)`})} />
         {known.map(([x, y, I], i) => {
           const p = prog(f, beats.scan + i * 6, 10);
           return <div key={i} style={abs({left: 330 + x - 45, top: 330 + y - 45, opacity: p, transform: `scale(${lerp(p, 0.6, 1)})`})}><Badge size={90} tilt={i * 25}><I size={50} color={W} /></Badge></div>;
@@ -252,8 +256,8 @@ export const NotepadScene: React.FC<SceneProps> = ({beats}) => {
     <Shell>
       <SidePanel side="left" top={520}>
         <div style={{perspective: 1000, ...enterX(pp, -80)}}>
-          <div style={{background: 'linear-gradient(170deg, #F4F7FF, #DCE6FA)', borderRadius: 26, padding: '34px 26px', height: 520,
-            transform: 'rotateY(16deg) rotateZ(-3deg)', boxShadow: `0 40px 80px rgba(0,0,0,0.5), 0 0 50px ${theme.blueGlow}`}}>
+          <div style={{background: 'rgba(255,255,255,0.88)', backdropFilter: theme.blur, borderRadius: 26, padding: '34px 26px', height: 520,
+            transform: 'rotateY(16deg) rotateZ(-3deg)', boxShadow: '0 30px 60px rgba(0,0,0,0.35)'}}>
             <div style={txt({fontWeight: 800, fontSize: 40, color: theme.deep, textAlign: 'center'})}>سجّل بعدي</div>
             {lines.map((i) => (
               <div key={i} style={{height: 3, borderRadius: 2, marginTop: 52, background: 'rgba(15,42,92,0.15)', position: 'relative'}}>
@@ -280,6 +284,7 @@ export const ItemScene: React.FC<SceneProps> = ({beats, props}) => {
   const extra = beats.tp !== undefined ? usePop(beats.tp) : 0;
   return (
     <Shell>
+      <Plate top={BELOW - 30} height={300} />
       <div dir="rtl" style={abs({left: 50, right: 50, top: BELOW - 5, display: 'flex', alignItems: 'center', gap: 26})}>
         <div style={{position: 'relative', width: 210, height: 230, display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none'}}>
           <Rings size={230} gold style={{left: -10, top: 0}} />
@@ -332,8 +337,8 @@ export const AccessScene: React.FC<SceneProps> = ({beats}) => {
         <Glass style={{marginTop: 18, padding: '18px 22px', ...enterY(pp, 20)}}>
           <div style={txt({fontWeight: 700, fontSize: 32, color: muted, marginBottom: 12})}>الصلاحيات</div>
           <div style={{position: 'relative', height: 30, borderRadius: 15, background: 'rgba(255,255,255,0.07)'}}>
-            <div style={abs({right: 0, top: 0, bottom: 0, width: `${pp * 58}%`, borderRadius: 15, background: `linear-gradient(270deg, ${theme.electric}, ${theme.blue})`})} />
-            <div style={abs({right: '58%', top: 0, bottom: 0, width: `${pm * 30}%`, borderRadius: 15, background: `repeating-linear-gradient(135deg, ${theme.gold}, ${theme.gold} 10px, ${theme.goldDeep} 10px, ${theme.goldDeep} 20px)`})} />
+            <div style={abs({right: 0, top: 0, bottom: 0, width: `${pp * 58}%`, borderRadius: 15, background: theme.blue})} />
+            <div style={abs({right: '58%', top: 0, bottom: 0, width: `${pm * 30}%`, borderRadius: 15, background: theme.gold})} />
             <div style={abs({right: '58%', top: -10, bottom: -10, width: 3, background: W, opacity: pp})} />
           </div>
           <div style={{display: 'flex', justifyContent: 'space-between', marginTop: 10}}>
@@ -394,6 +399,7 @@ export const ExampleScene: React.FC<SceneProps> = ({beats}) => {
   const pe = usePop(beats.ex), pn = usePop(beats.name);
   return (
     <Shell>
+      <Plate top={ABOVE + 20} height={300} />
       <div dir="rtl" style={abs({left: 40, right: 40, top: ABOVE + 40, textAlign: 'center'})}>
         <div style={{opacity: Math.min(1, pe * 1.3), transform: `scale(${lerp(pe, 0.7, 1)})`}}><Chip size={36}>وأقرب مثال</Chip></div>
         <div style={{marginTop: 26, perspective: 1000, opacity: Math.min(1, pn * 1.3)}}>
@@ -464,7 +470,7 @@ export const LateralScene: React.FC<SceneProps> = ({beats}) => {
           if (p <= 0) return null;
           const [x1, y1] = nodes[a], [x2, y2] = nodes[b];
           return <line key={`p${k}`} x1={x1} y1={y1} x2={x1 + (x2 - x1) * p} y2={y1 + (y2 - y1) * p} stroke={theme.gold} strokeWidth={5} strokeLinecap="round"
-            style={{filter: `drop-shadow(0 0 8px ${theme.goldGlow})`}} />;
+             />;
         })}
       </svg>
       {nodes.map(([x, y, I], i) => {
@@ -534,7 +540,7 @@ const Cylinder: React.FC<{size: number; glow?: number}> = ({size, glow = 0}) => 
     <div style={{position: 'relative', width: size, height: size * 1.1}}>
       {disks.map((i) => (
         <div key={i} style={abs({left: 0, right: 0, top: i * size * 0.3 + Math.sin((f + i * 10) / 30) * 3, height: size * 0.42, borderRadius: '50%',
-          background: i === 0 ? `linear-gradient(180deg, ${theme.ice}, ${theme.electric})` : `linear-gradient(180deg, ${theme.blue}, ${theme.deep})`,
+          background: i === 0 ? theme.sky : theme.blue,
           border: '1.5px solid rgba(191,217,255,0.5)', boxShadow: `0 12px 30px rgba(0,0,0,0.35), 0 0 ${40 * glow}px ${theme.goldGlow}`})} />
       )).reverse()}
     </div>
@@ -545,6 +551,7 @@ export const DataAssetScene: React.FC<SceneProps> = ({beats}) => {
   const pa = usePop(beats.asset), pm = prog(f, beats.most, 14);
   return (
     <Shell>
+      <Plate top={ABOVE - 10} height={420} />
       <div dir="rtl" style={abs({left: 60, right: 60, top: ABOVE + 20, display: 'flex', alignItems: 'center', gap: 34})}>
         <div style={{position: 'relative', flex: 'none', opacity: Math.min(1, pa * 1.3), transform: `scale(${lerp(pa, 0.6, 1)})`}}>
           <Rings size={300} gold={pm > 0.5} style={{left: -40, top: -30}} />
@@ -584,7 +591,7 @@ export const ThirdPartyScene: React.FC<SceneProps> = ({beats}) => {
           <Badge size={110} style={{margin: '0 auto'}}><BuildingIcon size={64} color={W} /></Badge>
           <div style={txt({fontWeight: 800, fontSize: 34, color: W, marginTop: 10})}>شركتك</div>
         </div>
-        <div style={{height: 70, width: 4, margin: '10px auto', background: `linear-gradient(180deg, ${theme.electric}, ${theme.gold})`, opacity: Math.max(ph, pm), borderRadius: 2}} />
+        <div style={{height: 70, width: 4, margin: '10px auto', background: theme.gold, opacity: Math.max(ph, pm), borderRadius: 2}} />
         <Row p={ph} Icon={HostIcon} text="شركة الاستضافة" dx={-60} />
         <Row p={pm} Icon={MailIcon} text="مزود البريد" dx={-60} />
         {scan >= 0 ? (
@@ -616,7 +623,7 @@ export const BreachScene: React.FC<SceneProps> = ({beats}) => {
         <div style={abs({top: -26, right: 30})}><Chip size={28}><BuildingIcon size={28} color={W} />الشركة</Chip></div>
       </div>
       <svg width={1080} height={1920} style={abs({left: 0, top: 0})}>
-        <path d="M150 1110 C 250 1110, 300 1050, 420 1000" stroke={theme.gold} strokeWidth={5} fill="none" strokeDasharray={400} strokeDashoffset={400 * (1 - ps)} style={{filter: `drop-shadow(0 0 8px ${theme.goldGlow})`}} />
+        <path d="M150 1110 C 250 1110, 300 1050, 420 1000" stroke={theme.gold} strokeWidth={5} fill="none" strokeDasharray={400} strokeDashoffset={400 * (1 - ps)}  />
         {inner.slice(1).map(([x, y], i) => <line key={i} x1={420} y1={1000} x2={420 + (x - 420) * Math.max(0, ps * 2 - 1)} y2={1000 + (y - 1000) * Math.max(0, ps * 2 - 1)} stroke={theme.gold} strokeWidth={4} opacity={0.8} />)}
       </svg>
       <div style={abs({left: 90, top: 1050, ...enterX(prog(f, 4, 12), -40)})}><Badge size={120} tone="gold"><HostIcon size={68} color="#1D1504" /></Badge></div>
@@ -643,7 +650,7 @@ export const SummaryScene: React.FC<SceneProps> = ({beats}) => {
           return (
             <div key={i} style={enterY(p, 24)}>
               <Glass style={{padding: '12px 14px', borderRadius: 22, display: 'flex', alignItems: 'center', gap: 12}}>
-                <div style={{width: 46, height: 46, borderRadius: 14, background: c > 0 ? `linear-gradient(160deg, #FFE29A, ${theme.gold})` : 'rgba(255,255,255,0.1)',
+                <div style={{width: 46, height: 46, borderRadius: 14, background: c > 0 ? theme.gold : 'rgba(255,255,255,0.1)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none'}}><CheckIcon size={36} color="#1D1504" stroke={6} draw={c} /></div>
                 <I size={34} color={theme.electric} />
                 <span style={txt({fontWeight: 700, fontSize: 28, color: W, lineHeight: 1.2})}>{t}</span>
@@ -669,6 +676,7 @@ export const NextEpScene: React.FC<SceneProps> = ({beats}) => {
   const pb = prog(f, beats.basics, 12), pn = usePop(beats.next);
   return (
     <Shell>
+      <Plate top={BELOW - 25} height={300} />
       <div dir="rtl" style={abs({left: 50, right: 50, top: BELOW, display: 'flex', alignItems: 'center', gap: 26})}>
         <div style={{perspective: 1000, opacity: Math.min(1, pn * 1.3), flex: 'none'}}>
           <Glass gold style={{width: 220, height: 250, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', transform: `rotateY(${lerp(pn, -90, -10)}deg)`}}>
@@ -702,7 +710,7 @@ export const MistakesScene: React.FC<SceneProps> = ({beats}) => {
           <svg width={700} height={420} style={abs({left: 0, top: 0})}>
             <path d="M330 30 L350 120 L320 190" stroke={theme.ice} strokeWidth={4} fill="none" strokeDasharray={200} strokeDashoffset={200 * (1 - ps)} />
             <path d="M320 190 L380 260 L330 330 L360 400 M380 260 L470 300 L560 280 M330 330 L230 360 L150 340 M350 120 L440 140 L520 100 M350 120 L250 110 L170 150"
-              stroke={theme.gold} strokeWidth={5} fill="none" strokeDasharray={1400} strokeDashoffset={1400 * (1 - pb)} style={{filter: `drop-shadow(0 0 10px ${theme.goldGlow})`}} />
+              stroke={theme.gold} strokeWidth={5} fill="none" strokeDasharray={1400} strokeDashoffset={1400 * (1 - pb)}  />
           </svg>
         </Glass>
       </div>
@@ -721,7 +729,7 @@ export const OutroScene: React.FC<SceneProps> = ({beats}) => {
   const pw = prog(f, beats.wait, 12), pb = prog(f, beats.bye, 14);
   return (
     <Shell>
-      <AbsoluteFill style={{background: 'linear-gradient(180deg, rgba(3,6,13,0) 46%, rgba(3,6,13,0.7) 70%, rgba(3,6,13,0.85) 100%)'}} />
+      <div style={abs({left: 40, right: 40, top: 1300, height: 420, borderRadius: 36, background: theme.glassStrong, backdropFilter: theme.blur, border: `1.5px solid ${theme.glassBorder}`})} />
       <div dir="rtl" style={abs({left: 40, right: 40, top: 1330, textAlign: 'center'})}>
         <div style={enterY(pw, 16)}><span style={txt({fontWeight: 700, fontSize: 46, color: W})}>انتظرونا للحلقة القادمة</span></div>
         <div style={{marginTop: 8, opacity: pb, transform: `scale(${lerp(pb, 1.2, 1)})`, filter: `blur(${lerp(pb, 14, 0)}px)`}}><Headline size={120} gold>ودمتم بخير</Headline></div>

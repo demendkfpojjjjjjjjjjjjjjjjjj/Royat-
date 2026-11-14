@@ -20,8 +20,8 @@ const Chunk: React.FC<{c: Caption & {sf: number; ef: number}; frame: number}> = 
   return (
     <div style={{position: 'absolute', left: 0, right: 0, top: CAPTION_Y, display: 'flex', justifyContent: 'center', transform: 'translateY(-50%)'}}>
       <div dir="rtl" style={{maxWidth: 960, padding: '14px 30px 18px', borderRadius: 30, textAlign: 'center',
-        background: 'linear-gradient(160deg, rgba(10,21,48,0.72), rgba(5,10,24,0.62))', border: '1.5px solid rgba(191,217,255,0.16)',
-        boxShadow: '0 18px 50px rgba(0,0,0,0.45)', backdropFilter: 'blur(14px)',
+        background: theme.glass, border: `1.5px solid ${theme.glassBorder}`,
+        boxShadow: '0 14px 40px rgba(0,0,0,0.3)', backdropFilter: theme.blur,
         opacity: pin * (1 - out), transform: `translateY(${lerp(pin, 14, 0)}px)`, filter: `blur(${out * 6}px)`}}>
         {words.map((w, i) => {
           const start = c.sf + (acc / total) * span;
@@ -31,7 +31,7 @@ const Chunk: React.FC<{c: Caption & {sf: number; ef: number}; frame: number}> = 
           return (
             <span key={i} style={{display: 'inline-block', margin: '0 7px', fontFamily: theme.font, fontWeight: hi ? 800 : 500,
               fontSize: long ? 44 : 50, lineHeight: 1.4, color: hi ? theme.gold : theme.white,
-              textShadow: hi ? `0 0 20px ${theme.goldGlow}` : 'none',
+              textShadow: 'none',
               opacity: lerp(p, 0.18, 1), filter: `blur(${lerp(p, 4, 0)}px)`, transform: `translateY(${lerp(p, 6, 0)}px)`}}>{w}</span>
           );
         })}
