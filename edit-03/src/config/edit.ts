@@ -122,7 +122,7 @@ export type SceneType =
   | 'question' | 'episode' | 'host' | 'path' | 'framework' | 'percent' | 'basics' | 'unknown'
   | 'notepad' | 'item' | 'accounts' | 'access' | 'devices' | 'example' | 'connect' | 'lateral'
   | 'systems' | 'dataAsset' | 'dataAccess' | 'thirdParty' | 'breach' | 'summary' | 'nextEp'
-  | 'mistakes' | 'outro';
+  | 'mistakes' | 'outro' | 'roadmap';
 export type Cue = [string, SfxName, number?];
 export type Scene = {
   type: SceneType; s: Anchor; e: Anchor; full?: boolean; hideCaptions?: boolean;
@@ -136,12 +136,13 @@ export const scenes: Scene[] = [
   {type: 'episode', s: at('01', 4.96), e: at('01', 9.36),
     beats: {badge: at('01', 5.72), title: at('01', 6.78), az: at('01', 8.3)},
     cues: [['badge', 'riser', 0.7], ['title', 'deephit', 0.8], ['title', 'shimmer', 0.7], ['az', 'sweep', 0.7]]},
-  {type: 'host', s: at('01', 9.4), e: at('01', 13.24),
+  {type: 'host', s: at('01', 9.4), e: at('01', 11.66),
     beats: {name: at('01', 9.54), build: at('01', 11.72)},
     cues: [['name', 'cardslide'], ['build', 'mech'], ['build', 'snap', 0.8]]},
-  {type: 'path', s: at('01', 13.3), e: at('01', 16.7),
-    beats: {a: at('01', 13.42), b: at('01', 14.6), c: at('01', 15.72)},
-    cues: [['a', 'blip'], ['b', 'blip', 0.9], ['c', 'notify', 0.8]]},
+  // Series roadmap (the 11 axes) while she describes what the series covers.
+  {type: 'roadmap', s: at('01', 11.7), e: at('01', 16.7), full: true,
+    beats: {list: at('01', 11.72), basics: at('01', 13.42), response: at('01', 14.6), continuity: at('01', 15.72)},
+    cues: [['in', 'glassswipe'], ['list', 'cardslide'], ['basics', 'tonal', 0.5], ['basics', 'sparkle', 0.6], ['response', 'blip'], ['continuity', 'notify', 0.7]]},
   {type: 'framework', s: at('01', 16.76), e: at('01', 19.5),
     beats: {card: at('01', 17.26), std: at('01', 18.54)},
     cues: [['card', 'cardflip'], ['std', 'glasstap']]},
@@ -215,6 +216,21 @@ export const scenes: Scene[] = [
   {type: 'outro', s: at('07', 15.04), e: at('07', 17.97), hideCaptions: true,
     beats: {wait: at('07', 15.04), bye: at('07', 16.68)},
     cues: [['wait', 'air'], ['bye', 'tonal', 0.8], ['bye', 'shimmer', 0.7]]},
+];
+
+// The series' axes (title, number of episodes) shown by the roadmap scene.
+export const seriesAxes: [string, string][] = [
+  ['أساسيات حماية الشركة', '1'],
+  ['أخطاء إدارية وتقنية شائعة', '1'],
+  ['الهجمات الحديثة (التصيّد الذكي + Deepfake)', '2'],
+  ['حماية الهويات السحابية والحسابات والبيانات', '2'],
+  ['أمن نقاط النهاية والعمل عن بعد', '1'],
+  ['الثغرات المتقدمة + Zero-day + الموردين', '2'],
+  ['التوعية + الامتثال + أمن أدوات الذكاء الاصطناعي', '2'],
+  ['المراقبة واكتشاف الأنشطة المشبوهة', '1'],
+  ['الاستجابة للحوادث والتعافي', '3'],
+  ['Red / Blue / Purple Team + قياس النضج', '2'],
+  ['التأمين السيبراني + قصص حوادث حقيقية', '2–3'],
 ];
 
 // Asset tracker HUD (6 segments) shown while the six assets are being listed.

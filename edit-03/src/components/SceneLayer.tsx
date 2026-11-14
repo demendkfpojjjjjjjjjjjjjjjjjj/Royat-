@@ -11,7 +11,7 @@ const registry: Record<SceneType, React.FC<S.SceneProps>> = {
   accounts: S.AccountsScene, access: S.AccessScene, devices: S.DevicesScene, example: S.ExampleScene, connect: S.ConnectScene,
   lateral: S.LateralScene, systems: S.SystemsScene, dataAsset: S.DataAssetScene, dataAccess: S.DataAccessScene,
   thirdParty: S.ThirdPartyScene, breach: S.BreachScene, summary: S.SummaryScene, nextEp: S.NextEpScene,
-  mistakes: S.MistakesScene, outro: S.OutroScene,
+  mistakes: S.MistakesScene, outro: S.OutroScene, roadmap: S.RoadmapScene,
 };
 
 // Full-screen scenes: a deep frosted-glass layer over the video (solid tint + strong blur).

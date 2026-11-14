@@ -1,6 +1,7 @@
 import React from 'react';
 import {AbsoluteFill, useCurrentFrame, useVideoConfig} from 'remotion';
 import {theme} from '../config/theme';
+import {seriesAxes} from '../config/edit';
 import {lerp, prog} from '../lib/anim';
 import {
   AppsIcon, BellIcon, BookIcon, BuildingIcon, CheckIcon, CloudIcon, CrossIcon, DbIcon, HostIcon, InstituteIcon,
@@ -741,3 +742,40 @@ export const OutroScene: React.FC<SceneProps> = ({beats}) => {
 };
 
 export const _icons = {BellIcon, BookIcon};
+
+// ---------------------------------------------------------------- series roadmap: the 11 axes (full)
+export const RoadmapScene: React.FC<SceneProps> = ({beats}) => {
+  const f = useCurrentFrame();
+  const pt = prog(f, 2, 12);
+  const active = f >= beats.response ? 8 : f >= beats.basics ? 0 : -1;
+  return (
+    <Shell>
+      <div dir="rtl" style={abs({left: 40, right: 40, top: 150, display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', ...enterY(pt, 20)})}>
+        <Headline size={64}>محاور السلسلة</Headline>
+        <span style={txt({fontWeight: 600, fontSize: 28, color: theme.sky})}>عدد الحلقات</span>
+      </div>
+      <div dir="rtl" style={abs({left: 40, right: 40, top: 265})}>
+        {seriesAxes.map(([title, eps], i) => {
+          const p = usePop(beats.list + i * 4);
+          const on = i === active;
+          const done = active >= 0 && i < active;
+          const long = title.length > 32;
+          return (
+            <div key={i} style={{...enterX(p, 70), marginBottom: 10}}>
+              <div style={{display: 'flex', alignItems: 'center', gap: 16, padding: '12px 16px', borderRadius: 22,
+                background: on ? theme.gold : theme.glass, backdropFilter: theme.blur,
+                border: `1.5px solid ${on ? theme.gold : theme.glassBorder}`, transform: `scale(${on ? 1.03 : 1})`}}>
+                <div style={{width: 56, height: 56, borderRadius: 16, flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: on ? theme.ink : done ? theme.blue : theme.glassLight,
+                  fontFamily: theme.font, fontWeight: 800, fontSize: 28, color: on ? theme.gold : theme.white}}>{i + 1}</div>
+                <span style={txt({flex: 1, minWidth: 0, fontWeight: 700, fontSize: long ? 27 : 31, lineHeight: 1.25, color: on ? theme.ink : theme.white})}>{title}</span>
+                <span style={txt({flex: 'none', minWidth: 74, textAlign: 'center', fontWeight: 800, fontSize: 26, padding: '6px 12px', borderRadius: 999,
+                  background: on ? theme.ink : 'rgba(59,130,246,0.35)', color: on ? theme.gold : theme.white, direction: 'ltr'})}>{eps}</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </Shell>
+  );
+};
